@@ -10,7 +10,9 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
+    "start:http": "node dist/index.js --port 3003",
     "dev": "tsx src/index.ts",
+    "dev:http": "tsx src/index.ts --port 3003",
     "test": "vitest",
     "lint": "eslint src/**/*.ts",
     "typecheck": "tsc --noEmit",
