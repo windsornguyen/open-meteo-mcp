@@ -12,6 +12,11 @@ import type {
   GeocodingResponse 
 } from './types.js';
 
+/**
+ * Open-Meteo API client providing access to comprehensive weather data
+ * Supports multiple specialized API endpoints for different weather services
+ * @class OpenMeteoClient
+ */
 export class OpenMeteoClient {
   private client: AxiosInstance;
   private airQualityClient: AxiosInstance;
@@ -22,23 +27,34 @@ export class OpenMeteoClient {
   private geocodingClient: AxiosInstance;
   private floodClient: AxiosInstance;
 
-  constructor(baseURL: string = process.env.OPEN_METEO_API_URL || 'https://api.open-meteo.com') {
+  /**
+   * Creates a new OpenMeteoClient instance with configurable API endpoints
+   * @param baseURL - Main Open-Meteo API URL for weather forecasts
+   * @param airQualityURL - Air quality API endpoint
+   * @param marineURL - Marine weather API endpoint  
+   * @param archiveURL - Historical weather data API endpoint
+   * @param seasonalURL - Seasonal forecast API endpoint
+   * @param ensembleURL - Ensemble forecast API endpoint
+   * @param geocodingURL - Geocoding API endpoint
+   * @param floodURL - Flood forecast API endpoint
+   */
+  constructor(
+    baseURL: string = 'https://api.open-meteo.com',
+    airQualityURL: string = 'https://air-quality-api.open-meteo.com',
+    marineURL: string = 'https://marine-api.open-meteo.com',
+    archiveURL: string = 'https://archive-api.open-meteo.com',
+    seasonalURL: string = 'https://seasonal-api.open-meteo.com',
+    ensembleURL: string = 'https://ensemble-api.open-meteo.com',
+    geocodingURL: string = 'https://geocoding-api.open-meteo.com',
+    floodURL: string = 'https://flood-api.open-meteo.com'
+  ) {
     const config = {
       timeout: 30000,
       headers: {
         'Accept': 'application/json',
-        'User-Agent': 'Open-Meteo-MCP-Server/1.0.0'
+        'User-Agent': 'Open-Meteo-MCP-Server/1.1.1'
       }
     };
-
-    // Utilisation des variables d'environnement avec des valeurs par défaut
-    const airQualityURL = process.env.OPEN_METEO_AIR_QUALITY_API_URL || 'https://air-quality-api.open-meteo.com';
-    const marineURL = process.env.OPEN_METEO_MARINE_API_URL || 'https://marine-api.open-meteo.com';
-    const archiveURL = process.env.OPEN_METEO_ARCHIVE_API_URL || 'https://archive-api.open-meteo.com';
-    const seasonalURL = process.env.OPEN_METEO_SEASONAL_API_URL || 'https://seasonal-api.open-meteo.com';
-    const ensembleURL = process.env.OPEN_METEO_ENSEMBLE_API_URL || 'https://ensemble-api.open-meteo.com';
-    const geocodingURL = process.env.OPEN_METEO_GEOCODING_API_URL || 'https://geocoding-api.open-meteo.com';
-    const floodURL = process.env.OPEN_METEO_FLOOD_API_URL || 'https://flood-api.open-meteo.com';
 
     this.client = axios.create({ baseURL, ...config });
     this.airQualityClient = axios.create({ baseURL: airQualityURL, ...config });
@@ -50,6 +66,12 @@ export class OpenMeteoClient {
     this.floodClient = axios.create({ baseURL: floodURL, ...config });
   }
 
+  /**
+   * Converts parameter object to string-based query parameters for API requests
+   * @param params - Parameters to convert
+   * @returns String-based parameters suitable for HTTP requests
+   * @private
+   */
   private buildParams(params: Record<string, unknown>): Record<string, string> {
     const result: Record<string, string> = {};
     
@@ -66,6 +88,11 @@ export class OpenMeteoClient {
     return result;
   }
 
+  /**
+   * Gets weather forecast data using the main Open-Meteo API
+   * @param params - Forecast parameters including location and weather variables
+   * @returns Promise resolving to weather response data
+   */
   async getForecast(params: ForecastParams): Promise<WeatherResponse> {
     const response = await this.client.get('/v1/forecast', {
       params: this.buildParams(params)
