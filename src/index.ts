@@ -27,15 +27,14 @@ async function main() {
         const shouldUseHttp = cliOptions.port || (process.env.PORT && !cliOptions.stdio);
         const port = cliOptions.port || config.port;
 
-				startHttpTransport({ ...config, port });
-        // if (shouldUseHttp) {
-        //     // HTTP transport for production/cloud deployment
-        //     startHttpTransport({ ...config, port });
-        // } else {
-        //     // STDIO transport for local development
-        //     const server = new OpenMeteoServer(config);
-        //     await runStdioTransport(server.getServer());
-        // }
+		        if (shouldUseHttp) {
+            // HTTP transport for production/cloud deployment
+            startHttpTransport({ ...config, port });
+        } else {
+            // STDIO transport for local development
+            const server = new OpenMeteoServer(config);
+            await runStdioTransport(server.getServer());
+        }
     } catch (error) {
         console.error("Fatal error running Open-Meteo server:", error);
         process.exit(1);
